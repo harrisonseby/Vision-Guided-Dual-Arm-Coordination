@@ -12,3 +12,6 @@
 	path = src/moveit2_parent_dir/moveit_resources
 	url = https://github.com/ros-planning/moveit_resources.git
 	branch = humble
+[submodule "src/vision_guided_dual_arm/aubo_ros2_driver"]
+	path = src/vision_guided_dual_arm/aubo_ros2_driver
+	url = git@github.com:AuboRobot/aubo_ros2_driver.git
