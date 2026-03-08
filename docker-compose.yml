@@ -1,0 +1,27 @@
+services:
+  vision-guided-dual-arm-coordination:
+    image: vision-guided-dual-arm-coordination
+    container_name: vision-guided-dual-arm-coordination-dev
+    network_mode: host
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+    runtime: nvidia
+    volumes:
+      # Mount the vision-guided dual-arm package workspace (in src/vision_guided_dual_arm)
+      - ./src/vision_guided_dual_arm:/ros_ws_project/src/vision_guided_dual_arm:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /dev/dri:/dev/dri
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, compute, utility, display, graphics]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - LIBGL_ALWAYS_SOFTWARE=0
