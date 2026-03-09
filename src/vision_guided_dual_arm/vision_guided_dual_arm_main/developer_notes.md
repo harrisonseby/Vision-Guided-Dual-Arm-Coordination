@@ -1,0 +1,5 @@
+# Initial setup of the robots in rviz alone using mock or fake controllers
+1. aubo_i5 script already defines the world link. Melfa has a separate xacro file that doesnt define the world link. So a single world link definition is sorted.
+2. xacro:if value="${use_fake_hardware}" line is commented out. I am erasing changes in the file aubo.ros2_control.xacro. Need to find a work around without making any changes to aubo parent branch
+2. Additional checks to ensure if we can reposition the robot in the world frame, especially for aubo. (aubo code is a bitch. Might need to create out own version in out package). Make sure you dont commit anything onto the aubo parent branch
+3. There are fake hardware commands already available. We need to find how the files will be loaded and how the planning groups will be configured to run both robots at the same time.
