@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<!--
+  Combined URDF for the dual-arm cell:
+    - Melfa RV5AS  (prefix: "melfa_")
+    - Aubo i5      (prefix: "aubo_")
+
+  Both robots are attached to a shared "world" link.
+  The Melfa hardware macro is reused directly from melfa_description.
+  The Aubo hardware macro is our local fixed copy (aubo_i5_ros2_control.xacro).
+
+  Arguments (pass from launch or xacro CLI): 
+    melfa_use_fake_hardware  (default: true)
+    melfa_robot_ip           (default: 192.168.0.20)
+    melfa_controller_type    (default: D)
+    aubo_use_fake_hardware   (default: true)
+    aubo_robot_ip            (default: 192.168.127.128)
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="dual_arm">
+
+  <!-- ============================================================
+       Arguments
+  ============================================================ -->
+  <!-- use_fake_hardware and use_sim are global args read directly by the
+       rv5as_hardware macro internals via $(arg ...) — they must be declared here. -->
+  <xacro:arg name="use_fake_hardware" default="true"/>
+  <xacro:arg name="use_sim"           default="false"/>
+
+  <xacro:arg name="melfa_robot_ip"          default="192.168.0.20"/>
+  <xacro:arg name="melfa_robot_port"        default="10000"/>
+  <xacro:arg name="melfa_controller_type"   default="D"/>
+  <!-- These must be absolute paths; the launch file resolves them. -->
+  <xacro:arg name="melfa_initial_positions_file" default="initial_positions_rv.yaml"/>
+  <xacro:arg name="melfa_controller_config"      default="custom_io_params.yaml"/>
+
+  <xacro:arg name="aubo_use_fake_hardware"  default="true"/>
+  <xacro:arg name="aubo_robot_ip"           default="192.168.127.128"/>
+
+  <!-- ============================================================
+       Includes — Melfa (from upstream package, untouched)
+  ============================================================ -->
+  <xacro:include filename="$(find melfa_description)/urdf/rv5as/rv5as_macro.xacro"/>
+  <xacro:include filename="$(find melfa_description)/ros2_control/rv5as.hardware.xacro"/>
+
+  <!-- ============================================================
+       Includes — Aubo (our local prefixed copies)
+  ============================================================ -->
+  <xacro:include filename="$(find vision_guided_dual_arm_main)/urdf/aubo_i5_macro.xacro"/>
+  <xacro:include filename="$(find vision_guided_dual_arm_main)/urdf/aubo_i5_ros2_control.xacro"/>
+
+  <!-- ============================================================
+       World link — the common fixed frame
+  ============================================================ -->
+  <link name="world"/>
+
+  <!-- ============================================================
+       Melfa RV5AS
+       Positioned at the origin of "world".
+       Adjust the origin xyz/rpy below to match your physical setup.
+  ============================================================ -->
+  <xacro:rv5as parent="world" prefix="melfa_">
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </xacro:rv5as>
+
+  <xacro:rv5as_hardware
+    name="melfa_rv5as"
+    prefix="melfa_"
+    robot_ip="$(arg melfa_robot_ip)"
+    robot_port="$(arg melfa_robot_port)"
+    use_fake_hardware="$(arg use_fake_hardware)"
+    controller_type="$(arg melfa_controller_type)"
+    initial_positions_file="$(arg melfa_initial_positions_file)"
+    controller_config="$(arg melfa_controller_config)"
+    scara="0"
+    is_j7="0" j7_linear="0"
+    is_j8="0" j8_linear="0"
+    packet_lost_log="1"/>
+
+  <!-- ============================================================
+       Aubo i5
+       Positioned 1 m to the right of the Melfa (positive Y).
+       Adjust the origin xyz/rpy below to match your physical setup.
+  ============================================================ -->
+  <xacro:aubo_i5 parent="world" prefix="aubo_">
+    <origin xyz="0.0 1.0 0.0" rpy="0 0 0"/>
+  </xacro:aubo_i5>
+
+  <xacro:aubo_i5_ros2_control
+    name="aubo_i5"
+    prefix="aubo_"
+    use_fake_hardware="$(arg aubo_use_fake_hardware)"
+    robot_ip="$(arg aubo_robot_ip)"/>
+
+</robot>

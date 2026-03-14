@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     ros-$ROS_DISTRO-ros-gz-bridge \
     ros-$ROS_DISTRO-joint-state-publisher \
     ros-$ROS_DISTRO-joint-state-publisher-gui \
+    ros-$ROS_DISTRO-rqt-joint-trajectory-controller \
     && rm -rf /var/lib/apt/lists/*
 # Initialize rosdep
 RUN rosdep update
@@ -54,6 +55,7 @@ WORKDIR /ros_ws_project
 # Source ROS and MoveIt2 overlays in bashrc
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 RUN echo "if [ -f /ros_ws_moveit2/install/setup.bash ]; then source /ros_ws_moveit2/install/setup.bash; fi" >> ~/.bashrc
+RUN echo "if [ -f /ros_ws_project/install/setup.bash ]; then source /ros_ws_project/install/setup.bash; fi" >> ~/.bashrc
 
 # Copy helper scripts into the image
 COPY ros_entrypoint.sh /ros_entrypoint.sh

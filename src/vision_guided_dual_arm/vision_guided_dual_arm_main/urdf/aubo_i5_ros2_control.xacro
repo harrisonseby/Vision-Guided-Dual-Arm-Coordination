@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<!--
+  ros2_control hardware interface macro for the Aubo i5.
+  Copied and fixed from aubo_description/urdf/xacro/inc/aubo.ros2_control.xacro:
+    - prefix is now properly applied to all joint names
+    - use_fake_hardware is correctly implemented (was commented-out in the original)
+
+  Params:
+    name              - ros2_control element name (e.g. "auboHardwareInterface")
+    prefix            - matches the prefix used in aubo_i5_macro.xacro (e.g. "aubo_")
+    use_fake_hardware - "true"  → fake_components/GenericSystem (simulation)
+                        "false" → aubo_driver/AuboHardwareInterface (real robot)
+    robot_ip          - IP address used when use_fake_hardware is false
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="aubo_i5_ros2_control" params="name prefix use_fake_hardware:=true robot_ip:=192.168.127.128">
+    <ros2_control name="${name}" type="system">
+      <hardware>
+        <xacro:if value="${use_fake_hardware}">
+          <plugin>fake_components/GenericSystem</plugin>
+          <param name="fake_sensor_commands">false</param>
+          <param name="state_following_offset">0.0</param>
+        </xacro:if>
+        <xacro:unless value="${use_fake_hardware}">
+          <plugin>aubo_driver/AuboHardwareInterface</plugin>
+          <param name="robot_ip">${robot_ip}</param>
+        </xacro:unless>
+      </hardware>
+
+      <joint name="${prefix}shoulder_joint">
+        <command_interface name="position">
+          <param name="min">-6.28318530718</param>
+          <param name="max"> 6.28318530718</param>
+        </command_interface>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="${prefix}upperArm_joint">
+        <command_interface name="position">
+          <param name="min">-6.28318530718</param>
+          <param name="max"> 6.28318530718</param>
+        </command_interface>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="${prefix}foreArm_joint">
+        <command_interface name="position">
+          <param name="min">-2.41</param>
+          <param name="max"> 2.41</param>
+        </command_interface>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="${prefix}wrist1_joint">
+        <command_interface name="position">
+          <param name="min">-2.66</param>
+          <param name="max"> 2.66</param>
+        </command_interface>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="${prefix}wrist2_joint">
+        <command_interface name="position">
+          <param name="min">-6.28318530718</param>
+          <param name="max"> 6.28318530718</param>
+        </command_interface>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="${prefix}wrist3_joint">
+        <command_interface name="position">
+          <param name="min">-2.23</param>
+          <param name="max"> 2.23</param>
+        </command_interface>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+    </ros2_control>
+  </xacro:macro>
+
+</robot>
